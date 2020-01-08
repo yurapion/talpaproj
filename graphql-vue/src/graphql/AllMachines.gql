@@ -1,0 +1,16 @@
+import { gql } from "apollo-boost";
+
+export default gql`
+  query machines {
+    machines {
+      id
+      name
+      sensors {
+        id
+        name
+      }
+    }
+  }
+`;
+
+
