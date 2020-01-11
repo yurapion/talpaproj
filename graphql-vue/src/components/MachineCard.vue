@@ -12,6 +12,7 @@
 <script>
 import gql from "graphql-tag";
 import GraphqlService from "@/services/graphql-service.js";
+import { mapState } from "vuex";
 export default {
   props: {
     machine: Object
@@ -20,6 +21,12 @@ export default {
     return {
       machine1: {}
     };
+  },
+  computed: {
+    ...mapState(["machine2", "machineList"])
+  },
+  beforeCreate() {
+    this.$store.dispatch("fetchMachineList");
   },
   apollo: {
     machines: gql`
