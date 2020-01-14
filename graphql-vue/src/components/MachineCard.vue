@@ -3,9 +3,9 @@
     class="event-link"
     :to="{ name: 'machine-show', params: { id: machine.id } }"
   >
-    <div>{{ machine.name }} {{ machine.sensors[0].name }} {{ machine.id }}</div>
-    <div v-for="contact in machines" :key="contact.id">{{ contact.name }}</div>
-    <div>{{ machine1 }}</div>
+    <div>{{ machine.name }}</div>
+    <!-- <div v-for="contact in machines" :key="contact.id">{{ contact.name }}</div>
+    <div>{{ machine1 }}</div> -->
   </router-link>
 </template>
 

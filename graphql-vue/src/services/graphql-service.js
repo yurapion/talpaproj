@@ -37,5 +37,22 @@ export default {
         id: id
       }
     });
+  },
+  async getSensorData(id, from, to) {
+    return await graphqlClient.query({
+      query: gql`
+        query sensorData($id: Int!, $from: DateTime!, $to: DateTime!) {
+          sensorData(id: $id, from: $from, to: $to) {
+            timestamp
+            value
+          }
+        }
+      `,
+      variables: {
+        id: id,
+        from: from,
+        to: to
+      }
+    });
   }
 };

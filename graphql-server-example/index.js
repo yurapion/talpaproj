@@ -5,12 +5,12 @@ const { GraphQLScalarType } = require("graphql");
 
 const typeDefs = gql`
   scalar DateTime
-  scalar GPSPosition
+  scalar Coordinates
   type Machine {
     id: Int
     sensors: [Sensor]
     name: String
-    lastKnownPosition: GPSPosition
+    lastKnownPosition: Coordinates
   }
 
   type Sensor {
@@ -90,7 +90,7 @@ const SensorMachine = [
 const sensors = [
   {
     id: 1,
-    name: "speed sensor"
+    name: "Speed sensor"
   },
   {
     id: 2,
@@ -131,7 +131,7 @@ const machines = [
 // ];
 
 const resolvers = {
-  GPSPosition: new GraphQLScalarType({
+  Coordinates: new GraphQLScalarType({
     name: "GPSPosition",
     description: "A set of coordinates. x, y",
     parseValue(value) {
