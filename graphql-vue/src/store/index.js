@@ -32,8 +32,8 @@ export default new Vuex.Store({
         commit("setMachine", response.data.machine);
       });
     },
-    fetchSensorDataList({ commit }, { id, startDate, endDate }) {
-      GraphqlService.getSensorData(id, startDate, endDate).then(
+    fetchSensorDataList({ commit }, { id, sensorId, startDate, endDate }) {
+      GraphqlService.getSensorData(id, sensorId, startDate, endDate).then(
         response => {
           commit("setSensorDataList", response.data.sensorData);
         },

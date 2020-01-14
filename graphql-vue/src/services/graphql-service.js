@@ -38,11 +38,16 @@ export default {
       }
     });
   },
-  async getSensorData(id, from, to) {
+  async getSensorData(id, sensorId, from, to) {
     return await graphqlClient.query({
       query: gql`
-        query sensorData($id: Int!, $from: DateTime!, $to: DateTime!) {
-          sensorData(id: $id, from: $from, to: $to) {
+        query sensorData(
+          $id: Int!
+          $sensorId: Int!
+          $from: DateTime!
+          $to: DateTime!
+        ) {
+          sensorData(id: $id, sensorId: $sensorId, from: $from, to: $to) {
             timestamp
             value
           }
@@ -50,6 +55,7 @@ export default {
       `,
       variables: {
         id: id,
+        sensorId: sensorId,
         from: from,
         to: to
       }

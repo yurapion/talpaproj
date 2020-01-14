@@ -2,10 +2,10 @@
   <div>
     <h1>Hi There</h1>
     <p>{{ id }}</p>
-    <p>{{ machine2.name }}</p>
+    <p>This is a {{ machine2.name }}</p>
     <p v-if="!checkSensor">Please Select a Sensor</p>
-    <label>Select a sensor</label>
-    <select v-model="sensor">
+    <label>Select a sensor </label>
+    <select v-model="sensor" @change="onChange($event)">
       <option
         v-for="sensor in machine2.sensors"
         :key="sensor.id"
@@ -14,17 +14,25 @@
       >
     </select>
 
-    <p>{{ machine2.lastKnownPosition }}</p>
-    <form @submit.prevent="fetchSesordata(id, startDate, endDate)">
+    <p>Last known gps position {{ machine2.lastKnownPosition }}</p>
+    <form @submit.prevent="fetchSesordata(id, startDate, endDate, sensor.id)">
       <!-- <input type="text" name="startDate" v-model="startDate" />
       <input type="text" name="endDate" v-model="endDate" /> -->
       <p v-if="!checkDates">Please Select Dates</p>
-      <datepicker v-model="startDate" placeholder="Select a start date" />
-      <datepicker v-model="endDate" placeholder="Select an  end date" />
+      <datepicker
+        v-model="startDate"
+        placeholder="Select a start date"
+        class="date"
+      />
+      <datepicker
+        v-model="endDate"
+        placeholder="Select an  end date"
+        class="date"
+      />
       <button v-if="checkDates">Fetch Sensors Data</button>
     </form>
     <line-chart v-if="checkIfData" :data="chartSensorsData"></line-chart>
-    <p v-else>
+    <p v-if="!chechDataAfterSubmit">
       Sorry there are no data for selected dates for {{ sensor.name }}
     </p>
   </div>
@@ -42,7 +50,8 @@ export default {
     return {
       startDate: "",
       endDate: "",
-      sensor: {}
+      sensor: {},
+      change: true
     };
   },
   computed: {
@@ -50,15 +59,26 @@ export default {
       return this.startDate && this.endDate;
     },
     checkSensor() {
-      console.log(this.sensor);
-      return this.sensor ? true : false;
+      return Object.entries(this.sensor).length > 0;
+    },
+    chechDataAfterSubmit() {
+      return this.change || this.checkIfData;
     },
     ...mapGetters(["chartSensorsData", "checkIfData"]),
     ...mapState(["machine2", "sensorDataList"])
   },
   methods: {
-    fetchSesordata(id, startDate, endDate) {
-      this.$store.dispatch("fetchSensorDataList", { id, startDate, endDate });
+    fetchSesordata(id, startDate, endDate, sensorId) {
+      this.$store.dispatch("fetchSensorDataList", {
+        id,
+        sensorId,
+        startDate,
+        endDate
+      });
+      this.change = false;
+    },
+    onChange() {
+      this.change = true;
     }
   },
   beforeCreate() {},
@@ -68,4 +88,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.date {
+  text-align: center;
+}
+</style>

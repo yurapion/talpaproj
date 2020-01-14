@@ -30,28 +30,51 @@ const typeDefs = gql`
   type Query {
     machines: [Machine]
     machine(id: Int!): Machine
-    sensorData(id: Int!, from: DateTime!, to: DateTime!): [SensorDataPoint]
+    sensorData(
+      id: Int!
+      sensorId: Int!
+      from: DateTime!
+      to: DateTime!
+    ): [SensorDataPoint]
   }
 `;
 
 const SensorData = [
   {
-    sensorDataId: 1,
+    id: 1,
     sensorMachineId: 1,
     timestamp: new Date(2019, 02, 15),
     value: "1.344"
   },
   {
-    sensorDataId: 2,
+    id: 2,
+    sensorMachineId: 1,
+    timestamp: new Date(2019, 12, 10),
+    value: "6.244"
+  },
+  {
+    id: 3,
+    sensorMachineId: 1,
+    timestamp: new Date(2019, 11, 25),
+    value: "1.344"
+  },
+  {
+    id: 4,
     sensorMachineId: 2,
-    timestamp: new Date(2018, 01, 24),
+    timestamp: new Date(2019, 01, 24),
     value: "5.16"
   },
   {
-    sensorDataId: 3,
+    id: 5,
     sensorMachineId: 1,
     timestamp: new Date(2019, 11, 24),
     value: "0.344"
+  },
+  {
+    id: 6,
+    sensorMachineId: 2,
+    timestamp: new Date(2019, 03, 17),
+    value: "9.16"
   }
 ];
 
@@ -147,9 +170,17 @@ const resolvers = {
   Query: {
     machines: () => machines,
     machine: (_, { id }) => find(machines, { id }),
-    sensorData: (_, { id, from, to }) => {
+    sensorData: (_, { id, sensorId, from, to }) => {
       let dataArr = [];
-      const data = filter(SensorData, { sensorMachineId: id });
+
+      const sensormachine = find(SensorMachine, {
+        machineId: id,
+        sensorId: sensorId
+      });
+
+      const data = filter(SensorData, {
+        sensorMachineId: sensormachine.sensorMachineId
+      });
       for (let index = 0; index < data.length; index++) {
         if (
           new Date(from) <= data[index].timestamp &&
