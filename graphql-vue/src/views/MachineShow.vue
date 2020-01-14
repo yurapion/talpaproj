@@ -1,5 +1,8 @@
 <template>
-  <div></div>
+  <div>
+    <h1>Hi There</h1>
+    <p>{{ id }}</p>
+  </div>
 </template>
 
 <script>

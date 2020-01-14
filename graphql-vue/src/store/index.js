@@ -11,7 +11,7 @@ export default new Vuex.Store({
   },
   mutations: {
     setMachine(state, machine) {
-      state.machine = machine;
+      state.machine2 = machine;
     },
     setMachinesList(state, machineList) {
       state.machineList = machineList;

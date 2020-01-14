@@ -1,11 +1,16 @@
 const { ApolloServer, gql } = require("apollo-server");
 const { find, filter } = require("lodash");
+const GraphQLDateTime = require("graphql-type-datetime");
+const { GraphQLScalarType } = require("graphql");
 
 const typeDefs = gql`
+  scalar DateTime
+  scalar GPSPosition
   type Machine {
     id: Int
     sensors: [Sensor]
     name: String
+    lastKnownPosition: GPSPosition
   }
 
   type Sensor {
@@ -15,18 +20,17 @@ const typeDefs = gql`
   }
 
   type SensorDataPoint {
+    # sensorMachineId: Int
     id: Int
     name: String
-    machine: Machine
-    sensor: Sensor
-    # timestamp: DateTime
+    timestamp: DateTime
     value: Float
   }
 
   type Query {
     machines: [Machine]
     machine(id: Int!): Machine
-    # sensorData(id: Int!, from: DateTime!, to: DateTime!): [SensorDataPoint]
+    sensorData(id: Int!, from: DateTime!, to: DateTime!): [SensorDataPoint]
   }
 `;
 
@@ -34,14 +38,20 @@ const SensorData = [
   {
     sensorDataId: 1,
     sensorMachineId: 1,
-    timestamp: "DateTime",
-    value: "Float"
+    timestamp: new Date(2019, 02, 15),
+    value: "1.344"
   },
   {
     sensorDataId: 2,
     sensorMachineId: 2,
-    timestamp: "DateTime",
-    value: "Float"
+    timestamp: new Date(2018, 01, 24),
+    value: "5.16"
+  },
+  {
+    sensorDataId: 3,
+    sensorMachineId: 1,
+    timestamp: new Date(2019, 11, 24),
+    value: "0.344"
   }
 ];
 
@@ -94,22 +104,61 @@ const sensors = [
 const machines = [
   {
     id: 1,
-    name: "Buldoser"
+    name: "Buldoser",
+    latitude: 40.1,
+    longitude: -76.5
   },
   {
     id: 2,
-    name: "Cran"
+    name: "Cran",
+    latitude: 40.1,
+    longitude: -76.5
   },
   {
     id: 3,
-    name: "Truck"
+    name: "Truck",
+    latitude: 40.1,
+    longitude: -76.5
   }
 ];
+// const machineLastKnowPosition = [
+//   {
+//     id: 1,
+//     machineId: 1,
+//     latitude: 40.1,
+//     longitude: -76.5
+//   }
+// ];
 
 const resolvers = {
+  GPSPosition: new GraphQLScalarType({
+    name: "GPSPosition",
+    description: "A set of coordinates. x, y",
+    parseValue(value) {
+      return value;
+    },
+    serialize(value) {
+      return value;
+    },
+    parseLiteral(ast) {
+      return ast.value;
+    }
+  }),
   Query: {
     machines: () => machines,
-    machine: (_, { id }) => find(machines, { id })
+    machine: (_, { id }) => find(machines, { id }),
+    sensorData: (_, { id, from, to }) => {
+      let dataArr = [];
+      const data = filter(SensorData, { sensorMachineId: id });
+      for (let index = 0; index < data.length; index++) {
+        if (
+          new Date(from) <= data[index].timestamp &&
+          new Date(to) >= data[index].timestamp
+        )
+          dataArr.push(data[index]);
+      }
+      return dataArr;
+    }
   },
   Machine: {
     sensors: machine => {
@@ -120,8 +169,12 @@ const resolvers = {
         sensors1.push(sensor1);
       }
       return sensors1;
+    },
+    lastKnownPosition(item) {
+      return [item.longitude, item.latitude];
     }
-  }
+  },
+  DateTime: GraphQLDateTime
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
