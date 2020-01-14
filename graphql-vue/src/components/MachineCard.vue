@@ -42,11 +42,7 @@ export default {
       }
     `
   },
-  methods: {
-    GetMach() {
-      // this.event = GraphqlService.getMachines();
-    }
-  },
+
   created() {
     GraphqlService.getMachines().then(response => {
       this.machine1 = response.data.machines[0].name;

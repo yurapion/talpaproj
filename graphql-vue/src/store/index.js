@@ -22,6 +22,11 @@ export default new Vuex.Store({
       GraphqlService.getMachines().then(response => {
         commit("setMachinesList", response.data.machines);
       });
+    },
+    fetchMachine({ commit }, id) {
+      GraphqlService.getMachine(id).then(response => {
+        commit("setMachine", response.data.machine);
+      });
     }
   },
   modules: {}

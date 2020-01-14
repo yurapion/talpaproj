@@ -18,7 +18,24 @@ export default {
       `
     });
   },
-  getSomething() {
-    return "Lol";
+  async getMachine(id) {
+    return await graphqlClient.query({
+      query: gql`
+        query machine($id: Int!) {
+          machine(id: $id) {
+            id
+            name
+            lastKnownPosition
+            sensors {
+              id
+              name
+            }
+          }
+        }
+      `,
+      variables: {
+        id: id
+      }
+    });
   }
 };
