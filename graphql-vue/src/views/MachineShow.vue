@@ -1,9 +1,12 @@
 <template>
   <div>
-    <h1>Hi There</h1>
     <p>{{ id }}</p>
-    <p>This is a {{ machine2.name }}</p>
-    <p v-if="!checkSensor">Please Select a Sensor</p>
+
+    <div class="machine-header">
+      <h1 class="title">This is a {{ machine2.name }}</h1>
+    </div>
+
+    <h4 v-if="!checkSensor">Please Select a Sensor</h4>
     <label>Select a sensor </label>
     <select v-model="sensor" @change="onChange($event)">
       <option
@@ -14,27 +17,49 @@
       >
     </select>
 
-    <p>Last known gps position {{ machine2.lastKnownPosition }}</p>
+    <div class="location">
+      <BaseIcon name="map" class="icon"><h2>Location</h2></BaseIcon>
+
+      <address>
+        Last known gps position {{ machine2.lastKnownPosition }}
+      </address>
+    </div>
+
     <form @submit.prevent="fetchSesordata(id, startDate, endDate, sensor.id)">
       <!-- <input type="text" name="startDate" v-model="startDate" />
       <input type="text" name="endDate" v-model="endDate" /> -->
-      <p v-if="!checkDates">Please Select Dates</p>
-      <datepicker
-        v-model="startDate"
-        placeholder="Select a start date"
-        class="date"
+      <div v-if="checkSensor">
+        <h3 v-if="!checkDates">Please Select Dates</h3>
+        <div class="field">
+          <label>First day</label>
+          <datepicker
+            v-model="startDate"
+            placeholder="Select a start date"
+            class="date"
+          />
+        </div>
+
+        <div class="field">
+          <label>Last day</label>
+          <datepicker
+            v-model="endDate"
+            placeholder="Select an  end date"
+            class="date"
+          />
+        </div>
+      </div>
+
+      <input
+        v-if="checkDates"
+        type="submit"
+        class="button -fill-gradient"
+        value="Fetch Sensors Data"
       />
-      <datepicker
-        v-model="endDate"
-        placeholder="Select an  end date"
-        class="date"
-      />
-      <button v-if="checkDates">Fetch Sensors Data</button>
     </form>
     <line-chart v-if="checkIfData" :data="chartSensorsData"></line-chart>
-    <p v-if="!chechDataAfterSubmit">
-      Sorry there are no data for selected dates for {{ sensor.name }}
-    </p>
+    <BaseIcon v-if="!chechDataAfterSubmit" name="info">
+      Sorry there are no data for selected dates for {{ sensor.name }}</BaseIcon
+    >
   </div>
 </template>
 
@@ -88,8 +113,20 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .date {
   text-align: center;
+}
+.location {
+  margin-bottom: 0;
+}
+.location > .icon {
+  margin-left: 10px;
+}
+.machine-header > .title {
+  margin: 0;
+}
+.field {
+  margin-bottom: 24px;
 }
 </style>

@@ -1,7 +1,9 @@
 <template>
   <div id="nav" class="nav">
     <nav>
-      <router-link :to="{ name: 'machine-list' }">Machine List</router-link>
+      <router-link :to="{ name: 'machine-list' }" class="brand"
+        >Machine List</router-link
+      >
     </nav>
   </div>
 </template>
